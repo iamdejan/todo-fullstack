@@ -1,0 +1,40 @@
+minimum_pre_commit_version: '2'
+fail_fast: true
+repos:
+  - repo: local
+    hooks:
+      - id: check-npm-version
+        name: Check npm version
+        language: system
+        entry: npm --version
+        pass_filenames: false
+      - id: install-rimraf
+        name: Install rimraf
+        language: system
+        entry: npm i -g rimraf@6.0.1
+        pass_filenames: false
+      - id: install-pnpm
+        name: Install pnpm
+        language: system
+        entry: npm i -g pnpm@9.10.0
+        pass_filenames: false
+      - id: install-dependencies
+        name: Install dependencies
+        language: system
+        entry: pnpm run deps
+        pass_filenames: false
+      - id: generate-routes
+        name: Generate routes
+        language: system
+        entry: pnpm run routes:generate
+        pass_filenames: false
+      - id: run-linter
+        name: Run linter
+        language: system
+        entry: pnpm run lint
+        pass_filenames: false
+      - id: build
+        name: Build
+        language: system
+        entry: pnpm run build
+        pass_filenames: false
