@@ -9,6 +9,11 @@ services:
       context: ./backend
     ports:
       - 60001:8000
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /app
   frontend:
     depends_on:
       - backend
@@ -17,7 +22,12 @@ services:
     build:
       context: ./frontend
     ports:
-      - 60002:3000
+      - 60002:4173
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /app
   database:
     image: postgres:16.4
     restart: always
