@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port=3000",
+    "dev": "vite --port=3000 --host",
     "deps": "pnpm install",
     "deps:update": "pnpm install && pnpm update --latest",
     "build": "rimraf dist && tsc -b && vite build",

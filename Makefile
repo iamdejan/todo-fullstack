@@ -1,10 +1,7 @@
-# Makefile is only used for local development.
-# In production, it's advisable to use Docker Stack.
+.PHONY: stack/start
+stack/start:
+	docker-compose up -d
 
-.PHONY: frontend/start
-frontend/start:
-	cd frontend && pnpm run dev
-
-.PHONY: backend/start
-backend/start:
-	cd backend && fastapi dev main.py
+.PHONY: stack/stop
+stack/stop:
+	docker-compose down
