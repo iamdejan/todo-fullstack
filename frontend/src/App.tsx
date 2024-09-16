@@ -1,8 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, AlertTitle, AppBar, Box, Button, Checkbox, Container, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Toolbar, Typography } from "@mui/material";
-import { JSX } from "react";
+import { AppBar, Button, Checkbox, Container, FormGroup, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Toolbar, Typography } from "@mui/material";
+import { Fragment, JSX } from "react";
 import { useForm } from "react-hook-form";
 import { ToDoItem, ToDoItemSchema } from "./schema/ToDoItemSchema";
+import { useCreateToDoItem, usePaginateToDoList } from "./hooks/todo";
 
 export default function App(): JSX.Element {
   const { register, handleSubmit, formState: { errors } } = useForm<ToDoItem>({
@@ -10,12 +11,18 @@ export default function App(): JSX.Element {
     mode: "all",
   });
 
+  const createToDoItemMutation = useCreateToDoItem();
+  const paginateToDoList = usePaginateToDoList();
+
   function onSubmit(data: ToDoItem): void {
+    createToDoItemMutation.mutate(data);
   }
 
   function onCheckChanged(event: React.ChangeEvent<HTMLInputElement>): void {
     const checked = event.target.checked;
     const index = Number.parseInt(event.target.name);
+
+    // TODO dejan: update db
   }
 
   return (
@@ -92,6 +99,17 @@ export default function App(): JSX.Element {
               </TableRow>
             </TableHead>
             <TableBody>
+              {paginateToDoList.isSuccess && paginateToDoList.data?.pages?.map((page, index) => (
+                <Fragment key={index}>
+                  {page.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell>{item.title}</TableCell>
+                      <TableCell>{item.description}</TableCell>
+                      <TableCell><Checkbox name={index.toString()} checked={item.finished} onChange={onCheckChanged} /></TableCell>
+                    </TableRow>
+                  ))}
+                </Fragment>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
