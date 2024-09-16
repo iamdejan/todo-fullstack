@@ -9,3 +9,7 @@ stack/watch:
 .PHONY: stack/stop
 stack/stop:
 	docker-compose down
+
+.PHONY: stack/database
+stack/database:
+	docker-compose -f docker-compose-database.yaml up -d
