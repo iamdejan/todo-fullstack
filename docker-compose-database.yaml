@@ -1,3 +1,6 @@
+# This file is only used to run backend and frontend locally.
+# For production deployment in cloud, please refer to docker-compose.yaml. 
+
 services:
   database:
     image: postgres:16.4
