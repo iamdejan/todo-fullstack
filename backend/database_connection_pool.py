@@ -5,11 +5,12 @@ import os
 
 load_dotenv()
 
-host = os.environ["POSTGRES_HOST"]
+host = os.getenv("POSTGRES_HOST")
 dbport = int(os.environ["POSTGRES_PORT"])
 dbname = os.environ["POSTGRES_DB"]
 user = os.environ["POSTGRES_USER"]
 password = os.environ["POSTGRES_PASSWORD"]
 
-# initiate connection pool for database
-pool = AsyncConnectionPool(conninfo=F"host={host} port={dbport} dbname={dbname} user={user} password={password}", open=False)
+connection_info = f"host={host} port={dbport} dbname={dbname} user={user} password={password}"
+
+pool = AsyncConnectionPool(conninfo=connection_info, open=False)

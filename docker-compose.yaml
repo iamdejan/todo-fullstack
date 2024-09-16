@@ -7,7 +7,7 @@ services:
     depends_on:
       - database
     env_file:
-      - .env
+      - deployment.env
     build:
       context: ./backend
     ports:
@@ -16,7 +16,7 @@ services:
     depends_on:
       - backend
     env_file:
-      - .env
+      - deployment.env
     build:
       context: ./frontend
     ports:
@@ -28,7 +28,7 @@ services:
       - backend-db-data:/var/lib/postgresql/data
       - ./db-migrations/1.sql:/docker-entrypoint-initdb.d/1.sql
     env_file:
-      - .env
+      - deployment.env
   adminer:
     image: adminer:4.8.1-standalone
     restart: always
