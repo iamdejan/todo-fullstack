@@ -1,25 +1,17 @@
 from contextlib import asynccontextmanager
-from psycopg_pool import AsyncConnectionPool
 from fastapi import FastAPI
-from dotenv import load_dotenv
-from pydantic import BaseModel
-from pypika import Table, Query
-from pypika.enums import Order
+from pypika import Table, Query # type: ignore
+from pypika.enums import Order # type: ignore
 from ulid import ULID
+from pydantic_types import ToDoItem, ToDoItemRequest
+from const import zero_ulid, default_page_limit
+from database_connection_pool import pool
 
 import time
-import os
 
-load_dotenv()
 
-host = os.environ["POSTGRES_HOST"]
-dbport = int(os.environ["POSTGRES_PORT"])
-dbname = os.environ["POSTGRES_DB"]
-user = os.environ["POSTGRES_USER"]
-password = os.environ["POSTGRES_PASSWORD"]
+server_start_time = time.time()
 
-# initiate connection pool for database
-pool = AsyncConnectionPool(conninfo=F"host={host} port={dbport} dbname={dbname} user={user} password={password}", open=False)
 
 # integrate pool's lifespan with FastAPI
 @asynccontextmanager
@@ -36,15 +28,8 @@ async def root() -> dict:
     return {"message": "Hello world!"}
 
 
-class ToDoItem(BaseModel):
-    id: str
-    title: str
-    description: str | None = None
-    finished: bool
-
-
 @app.get("/todos")
-async def get_all_todos(last_id: str = "00000000000000000000000000", limit: int = 10) -> list:
+async def get_all_todos(last_id: str = zero_ulid, limit: int = default_page_limit) -> list:
     todo_items = Table("todo_items")
     q = Query.from_(todo_items).select(todo_items.id, todo_items.title, todo_items.description, todo_items.finished).\
         where(last_id < todo_items.id).\
@@ -52,8 +37,9 @@ async def get_all_todos(last_id: str = "00000000000000000000000000", limit: int 
         limit(limit)
 
     results = []
+    q_str = str(q)
     async with pool.connection() as conn:
-        cursor = await conn.execute(str(q))
+        cursor = await conn.execute(q_str)
         async for record in cursor:
             result = ToDoItem(id=record[0], title=record[1], description=record[2], finished=record[3])
             results.append(result)
@@ -61,24 +47,18 @@ async def get_all_todos(last_id: str = "00000000000000000000000000", limit: int 
     return results
 
 
-class ToDoItemRequest(BaseModel):
-    title: str
-    description: str | None = None
-
-
-server_start_time = time.time()
-
-
 @app.post("/todos")
 async def create_todo(request: ToDoItemRequest):
     item_id = ULID.from_timestamp(server_start_time)
+    item_id_str: str = str(item_id)
 
     todo_items = Table("todo_items")
     q = Query.into(todo_items).\
         columns(todo_items.id, todo_items.title, todo_items.description, todo_items.finished).\
-        insert(str(item_id), request.title, request.description, False)
+        insert(item_id_str, request.title, request.description, False)
 
+    q_str = str(q)
     async with pool.connection() as conn:
-        await conn.execute(str(q))
+        await conn.execute(q_str)
 
     return {}
