@@ -1,35 +1,101 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Alert, AlertTitle, AppBar, Box, Button, Checkbox, Container, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Toolbar, Typography } from "@mui/material";
+import { JSX } from "react";
+import { useForm } from "react-hook-form";
+import { ToDoItem, ToDoItemSchema } from "./schema/ToDoItemSchema";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App(): JSX.Element {
+  const { register, handleSubmit, formState: { errors } } = useForm<ToDoItem>({
+    resolver: zodResolver(ToDoItemSchema),
+    mode: "all",
+  });
+
+  function onSubmit(data: ToDoItem): void {
+  }
+
+  function onCheckChanged(event: React.ChangeEvent<HTMLInputElement>): void {
+    const checked = event.target.checked;
+    const index = Number.parseInt(event.target.name);
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      <AppBar position="static" sx={{margin:"0", padding:"0"}}>
+        <Toolbar>
+          <Typography variant="h5">
+            To-do Fullstack
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Container
+      sx={{
+        backgroundColor: "rgba(230,230,230,1)",
+        background: "linear-gradient(180deg, rgba(230,230,230,1) 0%, rgba(234,255,234,1) 100%)",
+        minHeight: "100vh",
+        minWidth: "100%",
+        margin: "0",
+        paddingBottom: "5rem",
+      }}
+      >
+        {/* recommended approach without editing `eslint.config.js`
+        ref: https://github.com/orgs/react-hook-form/discussions/8622#discussioncomment-6305393 */}
+        <form style={{paddingTop: 2}} onSubmit={(event: React.FormEvent<HTMLElement>) => {
+          event.preventDefault();
+          void handleSubmit(onSubmit)(event);
+        }}>
+          <Stack
+            gap={4}
+            marginTop={3}
+            marginX="auto"
+            padding={2}
+            maxWidth="40%"
+            elevation={2}
+            component={Paper}
+          >
+            <Typography variant="h6" align="center">
+              Form
+            </Typography>
+            <TextField
+              {...register("title")}
+              label="Title"
+              error={!!errors.title}
+              helperText={errors.title?.message}
+            />
+            <TextField
+              {...register("description")} 
+              label="Description"
+              error={!!errors.description}
+              helperText={errors.description?.message}
+            />
+            <Button type="submit" variant="contained">Add</Button>
+          </Stack>
+        </form>
 
-export default App
+        <Typography variant="h6" align="center" marginTop={3}>
+          To-do List
+        </Typography>
+        <TableContainer
+          component={Paper}
+          sx={{
+            marginTop: 3,
+            maxHeight: "60vh",
+            maxWidth: "70vw",
+            marginX: "auto",
+          }}
+        >
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell width="22%">Title</TableCell>
+                <TableCell width="70%">Description</TableCell>
+                <TableCell width="8%">Is completed?</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Container>
+    </>
+  );
+}
