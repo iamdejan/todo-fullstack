@@ -11,6 +11,15 @@ import time
 
 
 server_start_time = time.time()
+todo_item_not_found_code = "TODO_ITEM_NOT_FOUND"
+
+
+def construct_not_found_detail(id: str) -> dict:
+    return {
+        "message": "To-do item not found",
+        "code": todo_item_not_found_code,
+        "value": id
+    }
 
 
 # integrate pool's lifespan with FastAPI
@@ -20,8 +29,10 @@ async def lifespan(app: FastAPI):
     yield
     await pool.close()
 
+
 # inintiate FastAPI
 app = FastAPI(lifespan=lifespan)
+
 
 @app.get("/")
 async def root() -> dict:
@@ -59,11 +70,7 @@ async def get_todo_by_id(id: str) -> ToDoItem | None:
         cursor = await conn.execute(q_str)
         record = await cursor.fetchone()
         if record is None:
-            raise HTTPException(status_code=404, detail={
-                "message": "To-do item not found",
-                "code": "TODO_ITEM_NOT_FOUND",
-                "value": id
-            })
+            raise HTTPException(status_code=404, detail=construct_not_found_detail(id))
     result = ToDoItem(id=record[0], title=record[1], description=record[2], finished=record[3])
     return result
 
@@ -101,11 +108,7 @@ async def delete_todo(id: str):
         cursor = await conn.execute(get_query_str)
         record = await cursor.fetchone()
         if record is None:
-            raise HTTPException(status_code=404, detail={
-                "message": "To-do item not found",
-                "code": "TODO_ITEM_NOT_FOUND",
-                "value": id
-            })
+            raise HTTPException(status_code=404, detail=construct_not_found_detail(id))
 
         # actual delete process
         await conn.execute(delete_query_str)
