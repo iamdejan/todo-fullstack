@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AppBar, Button, Checkbox, Container, FormGroup, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Checkbox, Container, FormGroup, Grid2, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Toolbar, Typography } from "@mui/material";
 import { Fragment, JSX } from "react";
 import { useForm } from "react-hook-form";
 import { ToDoItem, ToDoItemSchema } from "./schema/ToDoItemSchema";
@@ -16,13 +16,6 @@ export default function App(): JSX.Element {
 
   function onSubmit(data: ToDoItem): void {
     createToDoItemMutation.mutate(data);
-  }
-
-  function onCheckChanged(event: React.ChangeEvent<HTMLInputElement>): void {
-    const checked = event.target.checked;
-    const index = Number.parseInt(event.target.name);
-
-    // TODO dejan: update db
   }
 
   return (
@@ -81,38 +74,31 @@ export default function App(): JSX.Element {
         <Typography variant="h6" align="center" marginTop={3}>
           To-do List
         </Typography>
-        <TableContainer
-          component={Paper}
-          sx={{
-            marginTop: 3,
-            maxHeight: "60vh",
-            maxWidth: "70vw",
-            marginX: "auto",
-          }}
-        >
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell width="22%">Title</TableCell>
-                <TableCell width="70%">Description</TableCell>
-                <TableCell width="8%">Is completed?</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {paginateToDoList.isSuccess && paginateToDoList.data?.pages?.map((page, index) => (
-                <Fragment key={index}>
-                  {page.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell>{item.title}</TableCell>
-                      <TableCell>{item.description}</TableCell>
-                      <TableCell><Checkbox name={index.toString()} checked={item.finished} onChange={onCheckChanged} /></TableCell>
-                    </TableRow>
-                  ))}
-                </Fragment>
+        <Stack gap={2}>
+          {paginateToDoList.data?.pages?.map((page, index) => (
+            <Fragment key={index}>
+              {page.map((item) => (
+                <Paper
+                  sx={{
+                    padding: 1,
+                  }}
+                  key={item.id}
+                >
+                  <Stack direction="row">
+                    <Box flexGrow={1} paddingLeft={1}>
+                      <Typography variant="h6">{item.title}</Typography>
+                      <span>Description: {item.description ?? "-"}</span>
+                    </Box>
+                    <Box paddingRight={2}>
+                      <Checkbox />
+                      <span>Is completed?</span>
+                    </Box>
+                  </Stack>
+                </Paper>
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            </Fragment>
+          ))}
+        </Stack>
       </Container>
     </>
   );

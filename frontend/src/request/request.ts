@@ -5,7 +5,7 @@ const axiosInstance = axios.create({
   baseURL: "http://localhost:8443"
 });
 
-const perPageLimit = 10;
+const perPageLimit = 6;
 
 export async function postCreateToDoItem(item: ToDoItem): Promise<void> {
   await axiosInstance.post(`/todos`, item);
