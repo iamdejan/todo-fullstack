@@ -7,12 +7,13 @@ This is a demo application to learn fullstack application. The application will 
     - [x] Get list of to-do items.
     - [ ] Update to-do list.
         - User is allowed to change title, description, as well as the status of the to-do (finished or not).
-    - [ ] Delete one or more to-do list.
+    - [x] Delete one to-do item.
+    - [ ] Bulk-delete to-do items.
     - [ ] Implement authentication with Keycloak.
 
 - [ ] Frontend:
-    - [x] Create to-do list.
-    - [x] Get list of to-do items.
+    - [ ] Create to-do list.
+    - [ ] Get list of to-do items.
         - Implement infinite scrolling.
     - [ ] Update to-do list.
         - User is allowed to change title, description, as well as the status of the to-do (finished or not).
