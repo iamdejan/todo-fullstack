@@ -7,6 +7,6 @@ class ToDoItem(BaseModel):
     finished: bool
 
 
-class ToDoItemRequest(BaseModel):
+class CreateToDoItemRequest(BaseModel):
     title: str
     description: str | None = None
