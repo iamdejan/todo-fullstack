@@ -12,8 +12,8 @@ This is a demo application to learn fullstack application. The application will 
     - [ ] Implement authentication with Keycloak.
 
 - [ ] Frontend:
-    - [ ] Create to-do list.
-    - [ ] Get list of to-do items.
+    - [x] Create to-do list.
+    - [x] Get list of to-do items.
         - Implement infinite scrolling.
     - [ ] Update to-do list.
         - User is allowed to change title, description, as well as the status of the to-do (finished or not).

@@ -6,6 +6,7 @@ from ulid import ULID
 from pydantic_types import ToDoItem, CreateToDoItemRequest
 from const import zero_ulid, default_page_limit
 from database_connection_pool import pool
+from fastapi.middleware.cors import CORSMiddleware
 
 import time
 
@@ -32,6 +33,19 @@ async def lifespan(app: FastAPI):
 
 # inintiate FastAPI
 app = FastAPI(lifespan=lifespan)
+
+
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")

@@ -1,0 +1,1 @@
+export const zeroULID = "00000000000000000000000000";
