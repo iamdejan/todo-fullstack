@@ -10,8 +10,8 @@ export function useCreateToDoItem(): UseMutationResult<void, Error, ToDoItem> {
     onError: (error: Error) => {
       console.log(error);
     },
-    onSettled: (_, __, ___) => {
-      queryClient.invalidateQueries({
+    onSettled: async () => {
+      await queryClient.invalidateQueries({
         queryKey: ["todos"]
       });
     }

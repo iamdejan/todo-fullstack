@@ -9,7 +9,7 @@ export function usePaginateToDoList(): UseInfiniteQueryResult<InfiniteData<ToDoI
     queryFn: paginateToDoList,
     initialPageParam: zeroULID,
     placeholderData: keepPreviousData,
-    getNextPageParam: (lastPage, __, ___) => {
+    getNextPageParam: (lastPage) => {
       if(lastPage.length < 1) {
         return undefined;
       }

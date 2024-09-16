@@ -19,9 +19,9 @@ export default function App(): JSX.Element {
 
   useEffect(() => {
     if(inView) {
-      paginateToDoListQuery.fetchNextPage();
+      void paginateToDoListQuery.fetchNextPage();
     }
-  }, [inView]);
+  }, [inView, paginateToDoListQuery]);
 
   function onSubmit(data: ToDoItem): void {
     createToDoItemMutation.mutate(data);
@@ -37,14 +37,14 @@ export default function App(): JSX.Element {
         </Toolbar>
       </AppBar>
       <Container
-      sx={{
-        backgroundColor: "rgba(230,230,230,1)",
-        background: "linear-gradient(180deg, rgba(230,230,230,1) 0%, rgba(234,255,234,1) 100%)",
-        minHeight: "100vh",
-        minWidth: "100%",
-        margin: "0",
-        paddingBottom: "5rem",
-      }}
+        sx={{
+          backgroundColor: "rgba(230,230,230,1)",
+          background: "linear-gradient(180deg, rgba(230,230,230,1) 0%, rgba(234,255,234,1) 100%)",
+          minHeight: "100vh",
+          minWidth: "100%",
+          margin: "0",
+          paddingBottom: "5rem",
+        }}
       >
         {/* recommended approach without editing `eslint.config.js`
         ref: https://github.com/orgs/react-hook-form/discussions/8622#discussioncomment-6305393 */}
@@ -86,7 +86,7 @@ export default function App(): JSX.Element {
         <Stack gap={2} marginBottom={2}>
           {paginateToDoListQuery.isSuccess && paginateToDoListQuery.data?.pages?.map((page, index) => (
             <Fragment key={index}>
-              {(page ?? []).map((item) => (
+              {page.map((item) => (
                 <Paper
                   sx={{
                     padding: 1,
@@ -108,7 +108,7 @@ export default function App(): JSX.Element {
             </Fragment>
           ))}
         </Stack>
-        <Box ref={ref} id="observer-trigger" marginTop={2}>
+        <Box ref={ref} id="observer-trigger" marginTop={2} padding={2}>
         </Box>
       </Container>
     </>
