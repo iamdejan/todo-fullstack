@@ -8,4 +8,4 @@ RUN pip3 install -r requirements.txt
 
 COPY ./ /app/
 
-CMD [ "fastapi", "run", "main.py" ]
+CMD [ "fastapi", "dev", "main.py" ]

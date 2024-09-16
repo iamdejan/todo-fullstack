@@ -1,33 +1,26 @@
+# This file is only used for production deployment.
+# If you want to start the database container locally, refer to docker-compose-database.yaml.
+
 services:
   backend:
     restart: always
     depends_on:
       - database
     env_file:
-      - .env
+      - deployment.env
     build:
       context: ./backend
     ports:
       - 60001:8000
-    develop:
-      watch:
-        - action: sync
-          path: ./backend
-          target: /app
   frontend:
     depends_on:
       - backend
     env_file:
-      - .env
+      - deployment.env
     build:
       context: ./frontend
     ports:
       - 60002:4173
-    develop:
-      watch:
-        - action: sync
-          path: ./frontend
-          target: /app
   database:
     image: postgres:16.4
     restart: always
@@ -35,7 +28,7 @@ services:
       - backend-db-data:/var/lib/postgresql/data
       - ./db-migrations/1.sql:/docker-entrypoint-initdb.d/1.sql
     env_file:
-      - .env
+      - deployment.env
   adminer:
     image: adminer:4.8.1-standalone
     restart: always

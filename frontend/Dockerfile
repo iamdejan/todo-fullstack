@@ -2,8 +2,12 @@ FROM node:22
 
 WORKDIR /app
 
-COPY ./ /app/
+RUN npm install -g pnpm@9.10.0
 
-RUN npm install -g pnpm@9.10.0 && pnpm install
+COPY package.json /app/package.json
+
+RUN pnpm install
+
+COPY ./ /app/
 
 CMD [ "pnpm", "run", "preview" ]

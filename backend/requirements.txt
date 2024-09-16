@@ -3,3 +3,7 @@ pypika==0.48.9
 mypy==1.11
 psycopg[binary]==3.2.1
 psycopg[pool]==3.2.1
+pydantic==2.9.1
+python-dotenv==1.0.1
+python-ulid==2.7.0
+python-ulid[pydantic]==2.7.0
