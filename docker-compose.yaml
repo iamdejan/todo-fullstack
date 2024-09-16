@@ -1,3 +1,6 @@
+# This file is only used for production deployment.
+# If you want to start the database container locally, refer to docker-compose-database.yaml.
+
 services:
   backend:
     restart: always
