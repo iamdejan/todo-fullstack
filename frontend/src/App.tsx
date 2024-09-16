@@ -1,9 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AppBar, Box, Button, Checkbox, Container, FormGroup, Grid2, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Toolbar, Typography } from "@mui/material";
-import { Fragment, JSX } from "react";
+import { AppBar, Box, Button, Checkbox, Container, Paper, Stack, TextField, Toolbar, Typography } from "@mui/material";
+import { Fragment, JSX, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { ToDoItem, ToDoItemSchema } from "./schema/ToDoItemSchema";
-import { useCreateToDoItem, usePaginateToDoList } from "./hooks/todo";
+import { usePaginateToDoList } from "./hooks/query";
+import { useInView } from "react-intersection-observer";
+import { useCreateToDoItem } from "./hooks/mutation";
 
 export default function App(): JSX.Element {
   const { register, handleSubmit, formState: { errors } } = useForm<ToDoItem>({
@@ -12,7 +14,14 @@ export default function App(): JSX.Element {
   });
 
   const createToDoItemMutation = useCreateToDoItem();
-  const paginateToDoList = usePaginateToDoList();
+  const paginateToDoListQuery = usePaginateToDoList();
+  const {ref, inView} = useInView();
+
+  useEffect(() => {
+    if(inView) {
+      paginateToDoListQuery.fetchNextPage();
+    }
+  }, [inView]);
 
   function onSubmit(data: ToDoItem): void {
     createToDoItemMutation.mutate(data);
@@ -74,10 +83,10 @@ export default function App(): JSX.Element {
         <Typography variant="h6" align="center" marginTop={3}>
           To-do List
         </Typography>
-        <Stack gap={2}>
-          {paginateToDoList.data?.pages?.map((page, index) => (
+        <Stack gap={2} marginBottom={2}>
+          {paginateToDoListQuery.isSuccess && paginateToDoListQuery.data?.pages?.map((page, index) => (
             <Fragment key={index}>
-              {page.map((item) => (
+              {(page ?? []).map((item) => (
                 <Paper
                   sx={{
                     padding: 1,
@@ -99,6 +108,8 @@ export default function App(): JSX.Element {
             </Fragment>
           ))}
         </Stack>
+        <Box ref={ref} id="observer-trigger" marginTop={2}>
+        </Box>
       </Container>
     </>
   );
