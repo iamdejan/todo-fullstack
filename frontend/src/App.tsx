@@ -84,7 +84,7 @@ export default function App(): JSX.Element {
           To-do List
         </Typography>
         <Stack gap={2} marginBottom={2}>
-          {paginateToDoListQuery.isSuccess && paginateToDoListQuery.data?.pages?.map((page, index) => (
+          {paginateToDoListQuery.isSuccess && paginateToDoListQuery.data.pages.map((page, index) => (
             <Fragment key={index}>
               {page.map((item) => (
                 <Paper
