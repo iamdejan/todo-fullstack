@@ -7,3 +7,5 @@ pydantic==2.9.1
 python-dotenv==1.0.1
 python-ulid==2.7.0
 python-ulid[pydantic]==2.7.0
+pep8==1.7.1
+pylint==3.2.7

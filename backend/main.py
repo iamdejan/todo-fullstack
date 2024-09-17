@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
-from pypika import Table, Query # type: ignore
-from pypika.enums import Order # type: ignore
+from pypika import Table, Query  # type: ignore
+from pypika.enums import Order  # type: ignore
 from ulid import ULID
 from pydantic_types import ToDoItem, CreateToDoItemRequest
 from const import zero_ulid, default_page_limit
@@ -10,16 +10,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import time
 
-
 server_start_time = time.time()
 todo_item_not_found_code = "TODO_ITEM_NOT_FOUND"
 
 
-def construct_not_found_detail(id: str) -> dict:
+def construct_not_found_detail(item_id: str) -> dict:
     return {
         "message": "To-do item not found",
         "code": todo_item_not_found_code,
-        "value": id
+        "value": item_id
     }
 
 
@@ -31,9 +30,8 @@ async def lifespan(app: FastAPI):
     await pool.close()
 
 
-# inintiate FastAPI
+# initiate FastAPI
 app = FastAPI(lifespan=lifespan)
-
 
 origins = [
     "http://localhost",
@@ -56,9 +54,9 @@ async def root() -> dict:
 @app.get("/todos")
 async def get_all_todos(last_id: str = zero_ulid, limit: int = default_page_limit) -> list[ToDoItem]:
     todo_items = Table("todo_items")
-    q = Query.from_(todo_items).select(todo_items.id, todo_items.title, todo_items.description, todo_items.finished).\
-        where(last_id < todo_items.id).\
-        orderby(todo_items.id, order=Order.asc).\
+    q = Query.from_(todo_items).select(todo_items.id, todo_items.title, todo_items.description, todo_items.finished). \
+        where(last_id < todo_items.id). \
+        orderby(todo_items.id, order=Order.asc). \
         limit(limit)
 
     results = []
@@ -72,11 +70,11 @@ async def get_all_todos(last_id: str = zero_ulid, limit: int = default_page_limi
     return results
 
 
-@app.get("/todos/{id}")
-async def get_todo_by_id(id: str) -> ToDoItem | None:
+@app.get("/todos/{item_id}")
+async def get_todo_by_id(item_id: str) -> ToDoItem | None:
     todo_items = Table("todo_items")
-    q = Query.from_(todo_items).select(todo_items.id, todo_items.title, todo_items.description, todo_items.finished).\
-        where(todo_items.id == id).\
+    q = Query.from_(todo_items).select(todo_items.id, todo_items.title, todo_items.description, todo_items.finished). \
+        where(todo_items.id == item_id). \
         limit(1)
 
     q_str = str(q)
@@ -84,7 +82,7 @@ async def get_todo_by_id(id: str) -> ToDoItem | None:
         cursor = await conn.execute(q_str)
         record = await cursor.fetchone()
         if record is None:
-            raise HTTPException(status_code=404, detail=construct_not_found_detail(id))
+            raise HTTPException(status_code=404, detail=construct_not_found_detail(item_id))
     result = ToDoItem(id=record[0], title=record[1], description=record[2], finished=record[3])
     return result
 
@@ -95,8 +93,8 @@ async def create_todo(request: CreateToDoItemRequest):
     item_id_str: str = str(item_id)
 
     todo_items = Table("todo_items")
-    q = Query.into(todo_items).\
-        columns(todo_items.id, todo_items.title, todo_items.description, todo_items.finished).\
+    q = Query.into(todo_items). \
+        columns(todo_items.id, todo_items.title, todo_items.description, todo_items.finished). \
         insert(item_id_str, request.title, request.description, False)
 
     q_str = str(q)
@@ -106,15 +104,16 @@ async def create_todo(request: CreateToDoItemRequest):
     return {}
 
 
-@app.delete("/todos/{id}")
-async def delete_todo(id: str):
+@app.delete("/todos/{item_id}")
+async def delete_todo(item_id: str):
     todo_items = Table("todo_items")
-    get_query = Query.from_(todo_items).select(todo_items.id, todo_items.title, todo_items.description, todo_items.finished).\
-        where(todo_items.id == id).\
+    get_query = Query.from_(todo_items).select(todo_items.id, todo_items.title, todo_items.description,
+                                               todo_items.finished). \
+        where(todo_items.id == item_id). \
         limit(1)
-    
-    delete_query = Query.from_(todo_items).delete().\
-        where(todo_items.id == id)
+
+    delete_query = Query.from_(todo_items).delete(). \
+        where(todo_items.id == item_id)
 
     get_query_str = str(get_query)
     delete_query_str = str(delete_query)
@@ -122,7 +121,7 @@ async def delete_todo(id: str):
         cursor = await conn.execute(get_query_str)
         record = await cursor.fetchone()
         if record is None:
-            raise HTTPException(status_code=404, detail=construct_not_found_detail(id))
+            raise HTTPException(status_code=404, detail=construct_not_found_detail(item_id))
 
         # actual delete process
         await conn.execute(delete_query_str)
