@@ -14,3 +14,11 @@ export async function postCreateToDoItem(item: ToDoItem): Promise<void> {
 export async function paginateToDoList({pageParam}: {pageParam: string}): Promise<ToDoItem[]> {
   return (await axiosInstance<ToDoItem[]>(`/todos?last_id=${pageParam}&limit=${perPageLimit.toString()}`)).data;
 }
+
+export async function putUpdateToDoItem(item: ToDoItem): Promise<void> {
+  await axiosInstance.put(`/todos/${item.id ?? ""}`, item);
+}
+
+export async function deleteToDoItem(item: ToDoItem): Promise<void> {
+  await axiosInstance.delete(`/todos/${item.id ?? ""}`);
+}

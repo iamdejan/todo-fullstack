@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class ToDoItem(BaseModel):
     id: str
     title: str
@@ -9,4 +10,4 @@ class ToDoItem(BaseModel):
 
 class CreateToDoItemRequest(BaseModel):
     title: str
-    description: str | None = None
+    description: str

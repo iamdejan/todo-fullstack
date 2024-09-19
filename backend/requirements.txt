@@ -1,9 +1,9 @@
-fastapi[standard]==0.114.2
+fastapi[standard]==0.115.0
 pypika==0.48.9
-mypy==1.11
-psycopg[binary]==3.2.1
-psycopg[pool]==3.2.1
-pydantic==2.9.1
+mypy==1.11.2
+psycopg[binary]==3.2.2
+psycopg[pool]==3.2.2
+pydantic==2.9.2
 python-dotenv==1.0.1
 python-ulid==2.7.0
 python-ulid[pydantic]==2.7.0
