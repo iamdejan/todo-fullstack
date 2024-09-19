@@ -5,7 +5,9 @@ import { useForm } from "react-hook-form";
 import { ToDoItem, ToDoItemSchema } from "./schema/ToDoItemSchema";
 import { usePaginateToDoList } from "./hooks/query";
 import { useInView } from "react-intersection-observer";
-import { useCreateToDoItem } from "./hooks/mutation";
+import { useCreateToDoItem, useDeleteToDoItem, useUpdateToDoItem } from "./hooks/mutation";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function App(): JSX.Element {
   const { register, handleSubmit, formState: { errors } } = useForm<ToDoItem>({
@@ -15,6 +17,8 @@ export default function App(): JSX.Element {
 
   const createToDoItemMutation = useCreateToDoItem();
   const paginateToDoListQuery = usePaginateToDoList();
+  const updateToDoItemMutation = useUpdateToDoItem();
+  const deleteToDoItemMutation = useDeleteToDoItem();
   const {ref, inView} = useInView();
 
   useEffect(() => {
@@ -25,6 +29,17 @@ export default function App(): JSX.Element {
 
   function onSubmit(data: ToDoItem): void {
     createToDoItemMutation.mutate(data);
+  }
+
+  function handleUpdatedCheckbox(event: React.ChangeEvent<HTMLInputElement>, data: ToDoItem): void {
+    const checked: boolean = event.target.checked;
+    if(data.id) {
+      updateToDoItemMutation.mutate({...data, finished: checked});
+    }
+  }
+
+  function handleDeleteToDoButton(data: ToDoItem): void {
+    deleteToDoItemMutation.mutate(data);
   }
 
   return (
@@ -71,7 +86,10 @@ export default function App(): JSX.Element {
               helperText={errors.title?.message}
             />
             <TextField
-              {...register("description")} 
+              {...register("description", {
+                required: false,
+                setValueAs: (value: string | undefined) => value || undefined
+              })} 
               label="Description"
               error={!!errors.description}
               helperText={errors.description?.message}
@@ -98,10 +116,13 @@ export default function App(): JSX.Element {
                       <Typography variant="h6">{item.title}</Typography>
                       <span>Description: {item.description ?? "-"}</span>
                     </Box>
-                    <Box paddingRight={2}>
-                      <Checkbox />
-                      <span>Is completed?</span>
+                    <Box paddingRight={2} marginRight={2} alignContent="center">
+                      <Checkbox checked={item.finished} onChange={(e) => handleUpdatedCheckbox(e, item)} />
+                      <span>Finished?</span>
                     </Box>
+                    <IconButton onClick={() => handleDeleteToDoButton(item)}>
+                      <DeleteIcon />
+                    </IconButton>
                   </Stack>
                 </Paper>
               ))}
