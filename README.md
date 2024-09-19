@@ -2,7 +2,7 @@
 
 This is a demo application to learn fullstack application. The application will be a simple CRUD to-do project. List of features are as follows:
 
-- [ ] Backend:
+- [x] Backend:
     - [x] Create to-do list.
     - [x] Get list of to-do items.
     - [x] Update to-do list.
